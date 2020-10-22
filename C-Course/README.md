@@ -2,14 +2,14 @@
 
 ## Section 9: Controlling Programming Flow
 
-if else statement
+####if else statement
 ```
 if (expr){
   statement;
 }
 ```
 
-switch case statement
+####switch case statement
 ```
 switch (selection) {
   case '1': cout << "1 selected";
@@ -23,7 +23,7 @@ switch (selection) {
 }
 ```
 
-for loop
+####for loop
 ```
 for (initialization ; condition ; increment) {
   statement;
@@ -36,11 +36,21 @@ for (i = 1; i <= 5; i++) {
 }
 ```
 
-range-based for loop
+####range-based for loop
 ```
 for (var_type var_name: sequence) {
   statement; // can use var_name
 }
+
+vector <double> temps {87.2, 77.1, 80.0, 72.5};
+
+double average_temp {};
+double running_sum {};
+
+for (double temp: temps)
+  running_sum += temp;
+ 
+ average_temp = running_sum / temps.size();
 
 int scores [] {100, 90, 97};
 
@@ -53,7 +63,7 @@ for (int score : scores)
 
 ```
 
-while loop
+####while loop
 ```
 int i {1};
 
@@ -70,7 +80,7 @@ while (i <= 5) {
 
 ```
 
-do-while loop
+####do-while loop
 ```
 int number {};
 do {
