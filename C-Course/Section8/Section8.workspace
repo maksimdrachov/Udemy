@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Workspace Name="Section8" Database="" Version="10000">
+  <Project Name="MixedEpressions" Path="MixedEpressions/MixedEpressions.project" Active="No"/>
+  <Project Name="MyChallengeSolution" Path="MyChallengeSolution/MyChallengeSolution.project" Active="Yes"/>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Environment/>
+      <Project Name="MixedEpressions" ConfigName="Debug"/>
+      <Project Name="MyChallengeSolution" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="yes">
+      <Environment/>
+      <Project Name="MixedEpressions" ConfigName="Release"/>
+      <Project Name="MyChallengeSolution" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>
