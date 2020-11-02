@@ -226,4 +226,421 @@ getline(cin, s1, 'x');	// this isx
 cout << s1 << endl; // this is
 ```
 
+##Section 11: Functions
+#### Pass by Reference
+```
+void scale_number(int & num); 		//prototype
 
+int main() {
+	int number {1000};
+	scale_number(number);			//call
+	cout << number << endl;			//100
+	return 0;
+}
+
+void scale_number(int &num) {
+	if (num > 100)
+		num = 100;
+}
+```
+
+##Section 12: Pointers and References
+#### Declaring Pointers
+```
+variable_type *pointer_name {nullptr};
+```
+#### Accessing the Pointer Address
+```
+int *p;
+cout << "Address of p is: "<< &p << endl; 
+```
+#### Dereferencing a pointer
+You can access the data at the address contained in the score_ptr using the dereferecing operator 
+```
+int score {100};
+int *score_ptr {&score};
+
+cout << *score_ptr << endl;	//100
+
+*score_ptr = 200;			
+cout << *score_ptr << endl;	//200
+cout << score << endl;		//200
+```
+
+#### Dynamic Memory Allocation
+```
+int *int_ptr {nullptr};
+
+int_ptr = new int;		//allocate an integer on the heap
+
+delete int_ptr;			//frees the allocated storage
+```
+
+####  Pointers to constants
+The data pointed to by the pointers is constant and cannot be changed.
+The pointer itself can change and point somewhere else.
+
+```
+int high_score {100};
+int low_score {65};
+
+const int *score_ptr { &high_score};
+
+*score_ptr = 86;		//ERROR
+score_ptr = &low_score;	// OK
+```
+
+The data pointed to by the pointers can be changed.
+The pointer itself cannot change and point somewhere else.
+
+```
+int high_score {100};
+int low_score {65};
+
+int *const score_ptr { &high_score};
+
+*score_ptr = 86;		// OK
+score_ptr = &low_score;	// ERROR
+```
+
+The data pointed to by the pointer is constant and cannot be changed.
+The pointer itself cannot change and point somewhere else.
+```
+int high_score {100};
+int low_score {65};
+
+const int *const score_ptr { &high_score};
+
+*score_ptr = 86;		// OK
+score_ptr = &low_score;	// ERROR
+```
+
+#### Passing Pointers to Functions
+Pass-by-reference with pointers - defining the function
+```
+void double_data(int *int_ptr);
+
+void double_data(int *int_ptr) {
+	*int_ptr *=2;_
+}
+```
+Pass-by-reference with pinters - calling the function
+```
+int main() {
+	int value {10};
+	
+	cout << value << endl;		//10
+	
+	double_data( &value);
+	
+	cout << value << endl;		//20
+}
+```
+
+#### Returning a Pointer from a Function
+```
+int *largest_int (int *int_ptr1, int *int_ptr2) {
+	if (*int_ptr1 > *int_ptr2)
+		return int_ptr1;
+	else
+		return int_ptr2;
+}
+```
+
+#### What is a reference?
+```
+vector<string> stooges {"Larry", "Moe", "Curly"};
+	
+for (auto &str: stooges)
+	str = "Funny";		// changes the actual
+
+for (auto str:stooges)
+	cout << str << endl;	// Funny, Funny, Funny
+```
+
+## Section 13: OOP - Classes and Objects
+#### Declaring a Class and Creating Objects
+```
+class Player
+{
+	//attributes
+	std::string name;
+	int health;
+	int xp;
+	
+	//methods
+	void talk(std::string text_to_say);
+	bool is_dead();
+}
+```
+Creating objects
+```
+Account frank_account;
+Account jim_account;
+
+Account accounts[] {frank_account, jim_account};
+
+std::vector<Account> accounts1 {frank_account};
+accounts1.push_back(jim_account);
+```
+#### Accessing Class members
+If we have a pointer to an object (member of pointer operator)
+1) Dereference the pointer then use the dot operator
+```
+(*frank_account).balance;
+(*frank_account).deposit(1000.00);
+```
+2) Or use the member of pointer operator (arrow operator)
+```
+Account *frank_account = new Account();
+
+frank_account->balance;
+frank_account->deposit(1000.00);
+```
+#### Public and Private
+Declaring a Class
+```
+class Player
+{
+	private:
+		std::string name;
+		int health;
+		int xp;
+	public:
+		void talk(std::string text_to_say);
+		bool is_dead();_
+}
+```
+
+#### Implementing Member Methods
+Outside the class declaration
+```
+class Account {
+	private:
+		double balance;
+	public:
+		void set_balance(double bal);
+		double get_balance();
+};
+
+void Account::set_balance(double bal) {
+	balance = bal;
+}
+
+double Account::get_balance() {
+	return balance;
+}
+```
+
+Include Guards
+```
+#ifndef _ACCOUNT_H_
+#define _ACCOUNT_H_
+
+// Class Definition
+
+#endif
+```
+
+#### Consturctors
+```
+class Player
+{
+	private:
+		std::string name;
+		int health;
+		int xp;
+	public:
+		//Overloaded Constructors
+		Player();
+		Player(std::string name);
+		Player(std::string name, int health, int xp);
+};
+```
+
+#### The Default Constructor
+```
+class Account
+{
+	private:
+		std::string name;
+		double balance;
+	public:
+		Account(std::string name_val, double bal) {
+			name = name_val;
+			balance = bal;
+		}
+		bool withdraw(double amount);
+		bool deposit(double amount);
+};
+```
+
+#### Constructor Initialization lists
+```
+Player::Player()
+	: name{"None"}, health{0}, xp{0} {
+	
+	}
+```
+
+#### Delegating Constructors
+```
+Player::Player(std::string name_val, int health_val, int xp_val)
+	: name{name_val}, health{health_val}, xpo{xp_val} {
+	}
+
+Player::Player()
+	: Player {"None", 0, 0} {
+	}
+	
+Player::Player(std::string name_val)
+	: Player {name_val, 0, 0} {
+	}
+```
+
+#### Copy Constructor
+```
+Account
+
+Account::Account(const Account &source)
+	: name{source.name}, balance {source.balance} {
+	}
+```
+
+#### Shallow Copying with the Copy Constructor
+```
+class Shallow {
+	private:
+		int *data;						//POINTER
+	public:
+		Shallow(int d);					//Constructor
+		Shallow(const Shallow &source);	//Copy
+	Constructor
+		~Shallow();						//Destructor
+};
+
+Shallow::Shallow(int d) {
+	data = new int;						// Allocate storage
+	*data = d;
+}
+
+Shallow::Shallow(const Shallow &source): data(source.data) {
+	cout << "Copy constructor - shallow" << endl;
+}
+```
+
+#### Deep Copying with the Copy Constructor
+```
+class Deep {
+	private:
+		int *data;					//Pointer
+	public:
+		Deep(int d);				// Constructor
+		Deep(const Deep &source);	// Copy Constructor
+		~Deep();					// Destructor
+	
+};
+
+Deep::Deep(int d) {
+	data = new int;				// Allocate storage
+	*data = d;					
+}
+
+Deep::~Deep() {
+	delete data;				// free storage
+	cout << "Destructor freeing data"
+}
+
+Deep::Deep(const Deep &source) {
+	data = new int;				// Allocate storage
+	*data = *source.data;
+	cout << "Copy constructor - deep" << endl;
+	
+}
+
+OR
+	
+	Deep::Deep(const Deep &source) : Deep {*source.data} {
+		cout << "Copy constructor - deep" << endl;
+		
+	}
+```
+	
+#### Move Constructors
+r-value references
+```
+int x {100}
+
+int &l_ref = x; 				// l-value reference
+l_ref = 10;						// change x to 10
+
+int &&r_ref = 200;				// r-value reference
+r_ref = 300;					// change r_ref to 300
+
+int &&x_ref = x;				// Compiler error
+
+```
+l-value reference parameters
+```
+int x {100};					// x is an l-value
+
+void func(int &num):			// A 
+
+func(x);						// Calls A - x is an l-value
+func(200);						// Error - 200 is an r-value
+```
+l-value reference parameters
+```
+int x {100};					// x is an l-value
+
+void func(int &&num):			// B 
+
+func(200);						// Calls B - 200 is an r-value
+func(x);						// Error - x is an l-value
+```
+	
+#### 'This' pointer
+Contains the address of the object - so its a pointer to the object
+Can only be used in class scope
+
+#### Using const with Classes
+
+#### Static Class Members
+
+#### Struct vs Classes
+Essentially the same as a class except members are public by default
+
+#### Friends of a class
+A function or class that has access to private class member
+
+non-member function
+```
+class Player {
+	friend void display_player(Player &p);
+	std::string name;
+	int health;
+	int xp;
+}
+
+void display_player(Player &p) {
+	std:cout << p.name << std:endl;
+}
+```
+member function of another class
+```
+class Player {
+	friend void Other_class::display_player(Player &p);
+	std::string name;
+	int health;
+	int xp;
+}
+```
+Another class
+```
+class Player {
+	friend class Other_class);
+	std::string name;
+	int health;
+	int xp;
+}
+```
