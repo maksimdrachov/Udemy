@@ -976,6 +976,480 @@ class Department_Chair:
 	};
 ```
 
-#### 
+## Section 15: Polymorphism
+Runtime polymorphism: Being able to assign different meanings to the same function at run-time
+
+Not the default in C++, run-time polymorphism is achieved via
+- Inheritance
+- Base class pointers or references
+- virtual functions
+
+#### Using a Base Class Pointer
+```
+Account *p1 = new Account();
+Account *p2 = new Savings();
+Account *p3 = new Checking();
+Account *p4 = new Trust();
+
+p1->withdraw(1000);			// Account::withdraw
+p2->withdraw(1000); 		// Savings::withdraw
+p3->withdraw(1000);			// Checking::withdraw
+p4->withdraw(1000); 		// Trust::withdraw
+```
+With vector
+```
+Account *p1 = new Account();
+Account *p2 = new Savings();
+Account *p3 = new Checking();
+Account *p4 = new Trust();
+
+vector<Account *> accounts {p1, p2, p3, p4};
+
+for (auto acc_ptr: accounts)
+	acc_ptr->withdraw();
+```
+
+#### Virtual Functions
+Virtual functions
+- Redefined functions are bound statistically
+- Overridden functions are bound dynamically
+- Virtual functions are overridden
+- Allow us to treat all objects generally as objects of the base class
+
+Declaring virtual functions
+- Declare the funtions you want to override as virtual in the base class
+- Virtual functions are virtual all the way down the hierarchy from this point
+- Dynamic polymorpism only via account class pointer or reference
+
+```
+class Account {
+public:
+	virtual void withdraw(double amount);
+};
+
+class Checking : public Account {
+public:
+	virtual void withdraw(double amount);
+};
+```
+
+#### Virtual Destructors
+Virtual Destructors
+- Problems can happen when we destroy polymorphic objects
+- If a derived class is destroyed by deleting its storage via the base class pointer
+- Derived objects must be destroyed in the correct order starting at the correct destructor
+
+- Solution/rule:
+	- If a class has virtual functions
+	- ALWAYS provide a public virtual destructor
+	- If base class destructor is virtual then all derived class destructors are also virtual
+	
+```
+class Account {
+public:
+	virtual void withdraw(double amount);
+	virtual ~Account();
+}
+```
+
+#### Using the Override Specifier
+```
+class Base {
+public:
+	virtual void say_hello() const {
+		...
+	}
+	virtual ~Base() {}
+};
+
+class Derived: public Base {
+public:
+	virtual void say_hello() override {	// Produces compiler error
+										// Error: marked override but does not override
+	} 
+	virtual ~Derived() {}
+};
+```
+
+#### Using the Final Specifier
+- When used at the class level
+- Prevents a class from being derived from
+
+- When used at the method level
+- Prevents virtual method from being overridden in derived classes
+
+final class
+```
+class My_class final {
+	...
+};
+
+class Derived final: public Base {
+	...
+};
+```
+
+final method
+```
+class A {
+public:
+	virtual void do_something();
+};
+
+class B: public A {
+	virtual void do_something() final; 	// prevent further overriding
+};
+
+class C: public B {
+	virtual void do_something();		// COMPILER ERROR - can't override
+}
+```
+
+#### Using Base class references
+
+- We can use base class references with dynamic polymorphism
+- Useful when we pass objects to functions that expect a base class reference
+
+```
+Account a;
+Account &ref = a;
+ref.withdraw(1000);		// Account::withdraw
+
+Trust t;
+Account &red1 = t;
+ref1.withdraw(1000);	// Trust::withdraw
+
+```
+
+## Pure Virtual Functions and Abstract Classes
+Abstract class
+- Cannot instantiate objects
+- These classes are used as base classes in inheritance hierarchies
+- Often referred to as "abstract base classes"
+
+Concrete class
+- Used to instantiate objects from
+- All their member functions are defined
+
+Pure virtual funtion
+- Used to make a class abstract
+- Specified with "=0" in its declaration
+- Typically do not provide implementations
+
+- Derived classes must override the base class
+- If the derived class does not override then the derived class is also abstract
+- Used when it doesn't make sense for a base class to have an implementation -> but concrete classes must implement it
+
+```
+class Shape {			// Abstract
+private:
+	// attributes common to all shapes
+public:
+	virtual void draw() = 0;	// pure virtual function
+	virtual void rotate() = 0;	// pure virtual function
+	virtual ~Shape();
+}
+
+class Circle: public Shape {		// Concrete
+private:
+	// attributes for a circle
+public:
+	virtual void draw() override {
+		// code to draw a circle
+	}
+	virtual void rotate() override {
+		// code to rotate a circle
+	}
+	virtual ~Circle();
+	...
+}
+```
+
+Abstract base class
+- Cannot be instantiated
+- We can use pointers and references to dynamically refer to concrete class derived from them
+```
+Shape *ptr = new Circle();
+ptr->draw();
+ptr->rotate();
+```
+
+#### Abstract Classes as Interfaces
+- C++ does not provide true interfaces
+- We use abstract classes and pure virtual functions to achieve it
+- Suppose we want to provide Printable support for any object we wish without knowing it's implementation at compile time
+```
+std::cout << any_object << std::endl;
+```
+
+An Printable example
+```
+class Printable {
+	friend ostream &operator<<(ostream &, const Printable &obj);
+public:
+	virtual void print(ostream &os) const = 0;
+	virtual ~Printable() {};
+};
+
+ostream &operator<<(ostream &os, const Printable &obj) {
+	obj.print(os);
+	return os;
+};
+
+class Any_Class: public Printable {
+public:
+	// Must override Printable::print()
+	virtual void print(ostream *os) override {
+		os << "Hi, from Any_class";
+	}
+};
+```
+
+A Shapes example
+```
+class I_Shape {
+public:
+	virtual void draw() = 0;
+	virtual void rotate() = 0;
+	virtual ~I_Shape() {};
+};
+
+class Circle : public I_Shape {
+public:
+	virtual void draw() override {
+	};
+	virtual void rotate() override {
+	};
+	virtual ~Circle() {};
+
+};
+
+
+vector <I_Shape *> shapes;
+
+I_Shape *p1 = new Circle();
+I_Shape *p2 = new Line();
+I_Shape *p3 = new Square();
+
+for (auto const &shape: shapes) {
+	shape->rotate();
+	shape->draw();
+};
+```
+
+## Section 17: Smart Pointers
+What are they?
+- Objects
+- Can only point to heap-allocated memory
+- Automatically call delete when no longer needed
+- C++ Smart pointers
+	- Unique pointers
+	- Shared pointers
+	- Weak pointers
+- #include <memory>
+- Defined by class templates
+	- Wrapper around a raw pointer
+	- Overloaded operators
+		- Dereference (*)
+		- Member selection (->)
+		- Pointer arithmetic not supported (++, --, etc)
+	- Can have curtom deleters
+
+RAII - Resource Acquisition is Initialization
+- Common idiom or pattern used in software design based on container object lifetime
+- RAII objects are allocated on the stack
+- Resource Acquisition
+	- Open a file
+	- Allocate memory
+	- Acquire a lock
+- Is Initialization
+	- The resource is acquired in a constructor
+- Resource relinquishing
+	- Happens in the destructor
+	
+#### Unique pointers
+unique_ptr
+- Simple smart pointer - very efficient
+
+unique_ptr<T>
+- Points to an object of type T on the heap
+- It is unique - there can only be one unique_ptr<T> pointing to the object on the heap
+- Owns what it points to
+- Cannot be assigned or copied
+- Can be moved
+- When the pointer is destroyed, what it points to is automatically destroyed
+
+```
+{
+std::unique_ptr<int> p1 {new int {100}};
+
+std::cout << *p1 << std::endl;		//100
+
+*p1 = 200;
+
+std::cout << *p1 << std::endl;		//200
+
+} // Automatically deleted
+```
+
+unique_ptr - used defined class
+{
+std::unique_ptr<Account> p1 {new Account{"Larry"}};
+
+std::cout << *p1 << std::endl;	//display account
+
+p1->deposit(1000);
+p1->withdraw(500);
+
+}	// Automatically deleted
+
+unique_ptr - vectors and move
+
+{
+std::vector<std::unique_ptr<int>> vec;
+
+std::unique_ptr<int> ptr {new int(100)};
+
+vec.push_back(ptr);		// Error - copy not allowed
+
+vec.push_back(std::move(ptr));
+}		// automatically deleted
+
+unique_ptr - make unique
+{
+std::unique_ptr<int> p1 = make_unique<int>(100);
+
+std::unique_ptr<Account> p2 = make_unique<Account>("Curly", 5000);
+
+auto p3 = make_unique<Player>("Hero", 100, 100);
+}	// automatically deleted + (more efficient, no calls to new or delete)
+
+#### Shared pointers
+shared_ptr
+- Provides shared ownership of heap objects
+
+shared_ptr<T>
+- Points to an object of type T on the heap
+- It is not unique - there can be many shared_ptrs pointing to the same object on the heap
+- Establishes shared ownership relationship
+- can be assigned and copied
+- can be moved
+- doesn't support managing arrays by default
+- when the use count is zero, the managed object on the heap is destroyed
+
+shared_ptr - creating, initializing and using
+```
+{
+std::shared_ptr<int> p1 {new int {100}};
+
+std::cout << *p1 << std::endl;		// 100
+
+*p1 = 200;
+
+std::cout << *p1 << std::endl;		// 200
+}	// Automatically deleted
+```
+
+shared_ptr - some other useful methods
+```
+{
+// use_count - the number of shared_ptr objects managing the heap object
+std::shared_ptr<int> p1 {new int {100}};
+std::cout << p1.use_count() << std::endl;		// 1
+
+std::shared_ptr<int> p2 {p1};
+std::cout << p1.use_count() << std::endl;		// 2
+
+p1.reset();			// decrement the use_count; p1 is nulled out
+std::cout << p1.use_count() << std::endl;		// 1
+std::cout << p2.use_count() << std::endl;		// 2
+
+} // Automatically deleted
+```
+
+shared_ptr - used defined classes
+```
+{
+std::shared_ptr<Account> p1 {new Account{"Larry"}};
+std::cout << *p1 <<std::endl;		// display account
+
+p1->deposit(1000);
+p1->withdraw(1000);
+}		// Automatically deleted
+```
+
+shared_ptr - vectors and move
+```
+{
+std::vector<std::shared_ptr<int>> vec;
+std::shared_ptr<int> ptr {new int{100}};
+
+vec.push_back(ptr);		// OK - copy is allowed
+
+std::cout << ptr.use_count() << std::endl;	// 2
+}
+```
+shared_ptr - make_shared
+```
+{
+std::shared_ptr<int> p1 = make_shared<int>(100);	// use_count = 1
+std::shared_ptr<int> p2 {p1};						// use_count = 2
+std::shared_ptr<int> p3;
+p3 = p1												// use_count = 3
+} // Automatically deleted
+```
+- Use make_shared - it's more efficient
+- All 3 pointers point to the same object on the heap
+- When the use_count becomes 0 the heap object is deallocated
+
+#### Weak pointers
+weak_ptr
+- provides a non-owning "weak" reference
+
+weak_ptr<T>
+- points to an object of type T on the heap
+- does not participate in owning relationship
+- always created from a shared_ptr
+- does not increment or decrement reference use count
+- used to prevent strong reference cycles which could prevent objects from being deleted
+
+weak_ptr - circular or cyclic reference
+- A refers to B
+- B refers to A
+- Shared strong ownership prevents heap deallocation
+
+- Solution : make one of the pointers non-owning or weak
+- Now heap storage is deallocated properly
+
+#### Custom deleters
+- Sometimes when we destroy a smart pointer we need to do more than to just destroy the object on the heap
+- These are special use-cases
+- C++ smart pointers allow you to provide custom deleters
+- Different ways to achieve this:
+	- Functions
+	- Lambdas
+	- ...
+
+custom deleters - function
+```
+void my_deleter(Some_Class *raw_pointer) {
+	// your custom deleter code
+	delete raw_pointer;
+}
+
+shared_ptr<Some_Class> ptr {new Some_class{}, my_deleter};
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
