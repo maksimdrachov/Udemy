@@ -134,3 +134,49 @@ Mystring Mystring::operator-() const {
     return *this;
     
     }
+    
+Mystring Mystring::operator+(const Mystring &rhs) const {
+    char *buff = new char[strlen(this->str)+strlen(rhs.str)+1];
+    
+    std::strcpy(buff, this->str);
+    std::strcat(buff, rhs.str);
+        
+    Mystring temp{buff};
+    delete [] buff;
+        
+    return temp;
+    }
+
+Mystring &Mystring::operator+=(const Mystring &rhs) {
+    *this = *this + rhs;
+    
+    return *this;
+    
+    }
+    
+Mystring Mystring::operator*(const int multiply) {
+    Mystring temp;
+    for (int i=1; i<=multiply; i++)
+        temp = temp + *this;
+    return temp;
+    }
+    
+Mystring &Mystring::operator*=(const int multiply) {
+    *this = *this * 5;
+    
+    return *this;
+    
+    }
+
+Mystring &Mystring::operator++() {
+    for (int i=0; i<strlen(this->str); i++)
+        this->str[i]=toupper(this->str[i]);
+    return *this;
+    }
+    
+Mystring Mystring::operator++(int) {
+    Mystring temp {*this};
+    operator++();
+    return temp;
+    
+    }

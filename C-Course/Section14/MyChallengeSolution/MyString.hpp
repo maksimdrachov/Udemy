@@ -31,6 +31,17 @@ public:
     bool operator>(const Mystring &rhs);
     
     Mystring operator-() const;
+    Mystring operator+(const Mystring &rhs) const;
+    
+    Mystring &operator+=(const Mystring &rhs);
+    
+    Mystring operator*(const int multiply);
+    
+    Mystring &operator*=(const int multiply);
+    
+    Mystring &operator++();
+    
+    Mystring operator++(int);
 };
 
 #endif // _MYSTRING_H_

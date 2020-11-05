@@ -644,3 +644,338 @@ class Player {
 	int xp;
 }
 ```
+
+## Section 14: Operator Overloading
+
+#### Overloading the Assignment Operator (copy)
+```
+Mystring &Mystring::operator=(const Mystring &rhs) {
+	// Check for self assignment
+	if (this == &rhs)
+		return *this;
+	
+	// Deallocate storage for this->str since we are overwriting it
+	delete [] str;
+	
+	str = new char[std::strlen(rhs.str)+1];
+	
+	// Perform the copy
+	std::strcpy(str, rhs.str);
+	
+	// Return the current by reference to allow chain assignment
+	return *this;
+}
+```
+
+#### Overloading the Assignment Operator (move)
+```
+Mystring &Mystring::operator=(Mystring &&rhs) {
+	// Check for self assignment
+	if (this == &rhs)
+		return *this;
+	
+	// Deallocate current storage
+	delete [] str;
+	// Steal the pointer
+	str = rhs.str;
+	
+	// Null out the rhs object
+	rhs.str = nullptr;
+	
+	// Return current object
+	return *this;
+}
+```
+
+#### Overloading Operators as Member Functions
+```
+Mystring Mystring::operator-() const {
+	char *buff = new char[std::strlen(str) + 1];
+	std::strcpy(buff, str);
+	for (size_t i=0; i<std::strlen(buff); i++)
+		buff[i] = std::tolower(buff[i]);
+	Mystring temp {buff};
+	delete [] buff;
+	return temp;
+}
+```
+operator==
+```
+bool Mystring::operator==(const Mystring &rhs) const {
+	if (std::strcmp(str, rhs.str) == 0)
+		return true;
+	else
+		return false;
+}
+```
+operator+ (concatenation)
+```
+Mystring Mystring::operator+(const Mystring &rhs) const {
+	size_t buff_size = std::strlen(str) + std::strlen(rhs.str) + 1;
+	char *buff = new char[buff_size];
+	std::strcpy(buff, str);
+	std::strcat(buff, rhs.str);
+	Mystring temp {buff};
+	delete [] buff;
+	return temp;
+}
+```
+#### Overloading Operators as Global Functions
+Often declated as friend functions in the class declaration
+```
+Mystring operator- (const Mystring &obj) {
+	char *buff = new char[std::strlen(obj.str) + 1];
+	std::strcpy(buff, obj.str);
+	for (size_t i=0; i<std::strlen(buff); i++)
+		buff[i] = std::tolower(buff[i]);
+	Mystring temp {buff};
+	delete [] buff;
+	return temp;
+}
+```
+Operator==
+```
+bool operator==(const Mystring &lhs, const Mystring &rhs) {
+	if (std::strcmp(lhs.str, rhs.str) == 0)
+		return true;
+	else
+		return false;
+}
+```
+
+#### Overloading the Stream Insertion and Extraction Operators
+```
+std::ostream &operator<<(std::ostream &os, const Mystring &obj) {
+	os << obj.str;			// if friend function
+	// os << obj.get_str()	// if not friend function
+	return os;
+}
+```
+stream extraction operator >>
+```
+std::isstream &operator>>(std::istream &is, Mystring &obj) {
+	char *buff = new char[1000];
+	is >> buff;
+	obj = Mystring{buff};		// if you have copy or move assignment
+	delete [] buff;
+	return is;
+}
+```
+
+## Section 15: Inheritance
+
+#### Terminology and Notation
+- Inheritance
+	 Process of creating new classes from existing classes
+	 Reuse mechanism
+- Single inheritance
+	A new class is created from another 'single' class
+- Multiple inheritance
+	A new class is created from two (or more) other classes
+	
+- "is-A" relationship
+	Public inheritance
+	Derived classes are sub-types of their Base classes
+	Can use a derived class object wherever we use a base class object
+
+- Generalization
+	Combining similar classes into a single, more general class based on common attributes
+
+- Specialization
+	Creating new classes from existing classes providing more specialized attributes or operations
+	
+#### Inheritance and Composition
+- Public inheritance
+	"is-a" relationship
+- Composition 
+	"has-a" relationship
+```
+class Person {
+private:
+	std::string name;		// has-a name
+	Account account;		// has-a account
+}
+```
+
+#### Deriving Classes from Existing classes
+```
+class Base {
+	// Base class members
+}
+
+class Derived: access-specified Base {
+	// Derived class member
+}
+
+Access-specifier can be: public, private or protected
+```
+
+Types of inheritance in C++
+- Public
+	Most common
+	Establishes 'is-a' relationship between Derived and Base classes
+- private and protected
+	Establishes "derived class has a base class" relationship
+	"Is implemented in terms of" relationship
+	Different from composition
+
+#### Protected Members and Class Access
+The protected class member modifier
+- Accessible from the Base class itself
+- Accessible from classes derived from base
+- Not accessible by objects of base or derived
+
+Access with public inheritance
+- Public: accessible in derived class
+- Protected: accessible in derived class
+- Private: no access
+
+Access with protected inheritance
+- Public: becomes protected in derived class
+- Protected: becomes protected in derived class
+- Private: no access
+
+Access with private inheritance
+- Public: becomes private in derived class
+- Protected: becomes private in derived class
+- Private: no access
+
+#### Constructors and Destructors
+```
+class Base {
+	public:
+		Base() { cout << "Base constructor" << endl;}
+};
+
+class Derived: public Base {
+	public:
+		Derived() { cout << "Derived constructor" << endl;}
+};
+```
+A derived class does not inherit
+	- Base class constructors
+	- Base class destructor
+	- Base class overloaded assignment operators
+	- Base class friend functions
+	
+#### Passing Arguments to Base Class Constructors
+```
+class Base {
+	public:
+		Base();
+		Base(int);
+		...
+}
+
+Derived::Derived(int x): Base(x), {optional initializers for Derived} {
+	// code
+}
+```
+Constructors and class initialization
+```
+class Base {
+	int value;
+	
+	public:
+		Base(): value{0} {
+			cout << "Base no-args constructor" << endl;
+		}
+		Base(int x): value{x} {
+			cout << "int Base constructor" << endl;
+		}
+};
+
+class Derived : public Base {
+	int doubled_value;
+	
+public:
+	Derived(): Base {}, doubled_value{0} {
+		cout << "Derived no-args constructor" << endl;
+	}
+	Derived(int x) : Base{x}, doubled_value{x*2} {
+		cout << "int Derived constructor" << endl;
+	}
+}
+```
+
+#### Copy/Move Constructors and Operator = with Derived Classes
+Copy/Move constructors and overloaded operators=
+	- Not inherited from the Base class
+	- You may not need to provide your own
+		- Compiler-provided versions may be just fine
+	- We can explicitely invoke the base class versions from the derived class
+
+Copy constructor
+```
+class Base {
+	int value;
+public:
+	
+	Base(const Base &other) : value{other.value} {
+		cout << "Base copy constructor" << endl;
+	}
+};
+
+class Derived : public Base {
+	int doubled_value;
+public:
+	Derived(const Derived &other) : Base(other), doubled_value{other.doubled_value} {
+		cout << "Derived copy constructor" << endl;
+	}
+}
+```
+operator=
+```
+class Base {
+	int value;
+public:
+	Base &operator=(const Base &rhs) {
+		if (this != &rhs) {
+			value = rhs.value;	//assign
+		}
+		return *this;
+	}
+}
+
+class Derived : public Base {
+	int doubled_value;
+public:
+	Derived &operator=(const Derived &rhs) {
+		if (this != &rhs) {
+			Base::operator=(rhs);				// assign base part
+			doubled_value = rhs.doubled_value 	// assign derived part
+		} 
+	}
+
+}
+```
+
+#### Redefining Base Class Methods
+Using and redefining Base class methods
+```
+class Account {
+public:
+	void deposit(double amount) { balance += amount; }
+};
+
+class Savings_Account: public Account {
+public:
+	void deposit(double amount) {	// Redefine Base class method
+		amount += some_interest;	
+		Account::deposit(amount);	// invoke call base class method
+	}
+}
+```
+
+#### Multiple inheritance
+A derived class inherits from 2 or more Base classes at the same time
+```
+class Department_Chair: 
+	public Faculty, public Administrator {
+	
+	};
+```
+
+#### 
+
+

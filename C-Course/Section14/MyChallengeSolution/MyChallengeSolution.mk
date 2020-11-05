@@ -13,7 +13,7 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=Maksim Drachov
-Date                   :=03/11/2020
+Date                   :=05/11/2020
 CodeLitePath           :="/Users/maksim/Library/Application Support/CodeLite"
 LinkerName             :=/usr/bin/g++
 SharedObjectLinkerName :=/usr/bin/g++ -dynamiclib -fPIC
@@ -60,7 +60,7 @@ AS       := /usr/bin/as
 ## User defined environment variables
 ##
 CodeLiteDir:=/Applications/codelite.app/Contents/SharedSupport/
-Objects0=$(IntermediateDirectory)/MyString.cpp$(ObjectSuffix) $(IntermediateDirectory)/main.cpp$(ObjectSuffix) 
+Objects0=$(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IntermediateDirectory)/MyString.cpp$(ObjectSuffix) 
 
 
 
@@ -91,17 +91,17 @@ PreBuild:
 ##
 ## Objects
 ##
-$(IntermediateDirectory)/MyString.cpp$(ObjectSuffix): MyString.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/MyString.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/MyString.cpp$(DependSuffix) -MM MyString.cpp
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/Volumes/Seagate/Udemy/C-Course/Section14/MyChallengeSolution/MyString.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/MyString.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/MyString.cpp$(PreprocessSuffix): MyString.cpp
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/MyString.cpp$(PreprocessSuffix) MyString.cpp
-
 $(IntermediateDirectory)/main.cpp$(ObjectSuffix): main.cpp
 	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/main.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/main.cpp$(DependSuffix) -MM main.cpp
 	$(CXX) $(IncludePCH) $(SourceSwitch) "/Volumes/Seagate/Udemy/C-Course/Section14/MyChallengeSolution/main.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/main.cpp$(PreprocessSuffix): main.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/main.cpp$(PreprocessSuffix) main.cpp
+
+$(IntermediateDirectory)/MyString.cpp$(ObjectSuffix): MyString.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/MyString.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/MyString.cpp$(DependSuffix) -MM MyString.cpp
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/Volumes/Seagate/Udemy/C-Course/Section14/MyChallengeSolution/MyString.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/MyString.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/MyString.cpp$(PreprocessSuffix): MyString.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/MyString.cpp$(PreprocessSuffix) MyString.cpp
 
 
 -include $(IntermediateDirectory)/*$(DependSuffix)
