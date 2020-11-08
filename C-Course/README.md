@@ -1440,6 +1440,636 @@ void my_deleter(Some_Class *raw_pointer) {
 shared_ptr<Some_Class> ptr {new Some_class{}, my_deleter};
 ```
 
+## Section 18: Exception Handling
+
+#### Basic Concepts and a Simple Example: Dividing by zero
+What causes exceptions?
+- insufficient resources
+- missing resources
+- invalid operations
+- range violations
+- underflows and overflows
+- illegal data and many others
+
+Exception safe: when your code handles exceptions
+
+- throw
+	- throws an exception
+	- followed by an argument
+- try { code that may throw an exception}
+	- you place code that may throw an exception in a try block
+	- if the code throws an exception the try block is exited
+	- the thrown exception is handled by a catch handler
+	- if no catch handler exists the program terminates
+- catch(Exception ex) { code to handle the exception}
+	- code that handles the exception
+	- can have multiple catch handlers
+	- may or may not cause the program to terminate
+
+Divide by zero example
+```
+double average {};
+try {
+	if (total == 0)
+		throw 0;
+	average = sum / total;
+}
+catch (int &ex) {
+	std::cerr << "can't divide by zero" << std::endl;
+}
+std::cout << "program continues" << std::endl;
+```
+
+#### Throwing an Exception from a function
+Throwing an exception from a function
+```
+double calculate_avg(int sum, int total) {
+	if (total == 0)
+		throw 0;
+	return static_cast<double>(sum)/total;
+}
+
+double average {};
+
+try {
+	average = calculate_avg(sum, total);
+	std::cout << average << std::endl;
+}
+
+catch (int &ex) {
+	std::cerr << "You can't divide by zero" << std::endl;
+}
+```
+
+#### Handling Multiple Exceptions
+```
+double calculate_mpg(int miles, int gallons) {
+	if (gallons == 0)
+		throw 0;
+	if (miles < 0 || gallons < 0)
+		throw std::string{"Negative value error"};
+		
+	return static_cast<double>(miles) / gallons;
+}
+
+double miles_per_gallon {};
+try {
+	miles_per_gallon = calculate_mpg(miles, gallons);
+	std::cout << miles_per_gallon << std::endl;
+}
+catch (int &ex) {
+	std::cerr << "You can't divide by zero" << std::endl;
+}
+catch (std::string &ex) {
+	std::cerr << ex << std::endl;
+}
+
+std::cout << "Bye" << std::endl;
+```
+
+Catching any type of exception
+```
+catch (int &ex) {
+	
+}
+catch (std::string &ex) {
+	
+}
+catch(...) {
+	std::cerr << "Unknown exception" << std::endl;
+}
+```
+
+#### Stack Unwinding and How it Works
+If an exception is thrown but not caught in the current scope
+C++ tries to find a handler for the exception by unwinding the stack
+
+#### Creating User-defined Exception classes
+we can create exception classes and throw instances of those classes
+
+Best practice:
+- throw an object not a primitive type
+- throw an object by value
+- catch an object by reference (or const reference)
+
+```
+class DivideByZeroException {
+};
+
+class NegativeValueException {
+};
+
+double calculate_mpg(int miles, int gallons) {
+	if (gallons = 0)
+		throw DivideByZeroException();
+	if (miles < 0 || gallons < 0)
+		throw NegativeValueException();
+		
+	return static_cast<double>(miles) / gallons;
+}
+
+try {
+	miles_per_gallon = calculate_mpg(miles, gallons);
+	std::cout << miles_per_gallon << std::endl;
+}
+catch (const DivideByZeroException &ex) {
+	std::cerr << "You can't divide by zero" << std::endl;
+}
+catch (const NegativeValueException &ex) {
+	std::cerr << "NEgative values aren't allowed" << std::endl;
+}
+
+std::cout << "Bye" << std::endl;
+```
+
+#### Class Level Exceptions
+Exceptions can also be thrown from within a class
+- Method
+	- These work the same way as they do for function as we've seen
+- Constructor
+	- Constructors may fail
+	- Cosntructors do not return any value
+	- Throw an exception in the cosntructor if you cannot initialize an object
+- Destructor
+	- Do NOT throw exceptions from your destructor
+	
+```
+Account::Account(std::string name, double balance) : name{name}, balance{balance} {
+	if (balance < 0.0)
+		throw IllegalBalanceException{};
+}
+try {
+	std::unique_ptr<Account> moes_account = std::make_unique<Checking_Account>("Moe", -10.0);
+}
+catch (const IllegalBalanceException &ex) {
+	std::cerr << "Couldn't create account" << std::endl;
+}
+```
+#### The C++ std::exception class hierarchy
+C++ provides a class hierarchy of exception classes
+	- std::exception is the base class
+	- all subclasses implement the what() virtual function
+	- we can create our own user-defined exception subclasses
+
+Deriving our class from std::exception
+```
+class IllegalBalanceException: public std::exception
+{
+public:
+	IllegalBalanceException() noexcept = default;
+	~IllegalBalanceException() = default;
+	virtual const char* what() const noexcept {
+		return "Illegal balance exception";
+	}
+}
+
+Account::Account(std::string name, double balance): name{name}, balance{balance} {
+	if (balance < 0.0)
+		throw IllegalBalanceException{};
+}
+
+try {
+	std::unique_ptr<Account> moes_account = std::make_unique<Checking_Account>("Moe", -100.0);
+	
+	std::cout << "Use moes_account" << std::endl;
+}
+
+catch (const IllegalBalanceException &ex) {
+	std::cerr << ex.what() << std::endl;
+}
+```
+
+#### IO and Streams
+| Header file  	| Description |
+| ------------- | ------------- |
+| iostream		| Provides definitions for formatted input and output from/to streams  |
+| fstream  		| Provides definitions for formatted inputs and output from/to file streams  |
+| iomanip  		| Provides definitions for manipulators used to format stream IO  |
+
+Commonly used stream classes
+|Class					| Description			|
+| -------------------	| ------------------- 	|
+| ios							| Provides basic support for fomatted and unformatted IO operations.				|
+| ifstream						| Provides for high-level input operations on file based streams					|
+| ofstream						| Provides for high-level output operations on file based stream					|
+| fstream						| Provides for high-level IO operations on file based systems						|
+| stringstream					| Provides for high-level IO operations on memory based strings						|
+
+Global stream objects
+| Object 	| Description		|
+| -------- 	| ---------- |
+| cin		| Standard input stream - by default 'connected' to the standard input device (keyboard)		|
+| cout		| Standard output stream - by default 'connected' to the standard output device (console)		|
+| cerr		| Standard error stream - by default 'connected' to the standard error device (console)			|
+| clog		| Standard log stream - by default 'connected' to the standard log device (console)				|
+
+#### Stream Manipulators
+- Boolean:
+	- boolalpha, noboolalpha
+- Integer:
+	- dec, hex, showbase, noshowbase, showpos, noshowpos, uppercase, nouppercase
+- Floating point
+	- fixed, scientific, setprecision, showpoint, noshowpoint, showpos, noshowpos
+- Field width, justification, fill
+	- setw, left, right, internal, setfill
+- Others
+	- endl, flush, skipws, noskipws, ws
+	
+#### Stream Manipulators: boolean
+```
+std::cout << std::boolalpha;	// 1 or 0
+std::cout << std::noboolalpha;	// true or false
+```	
+Reset to default
+```
+std::cout << std::resetiosflags(std::ios::boolalpha);
+```
+
+#### Stream Manipulators: integers
+```
+int num {255};
+
+std::cout << std::dec << num << std::endl;
+std::cout << std::hex << num << std::endl;
+std::cout << std::oct << num << std::endl;
+
+// Will display
+255
+ff
+377
+```
+
+```
+int num {255};
+
+std::cout << std::showbase;		// std::noshowbase
+std::cout << std::dec << num << std::endl;
+std::cout << std::hex << num << std::endl;
+std::cout << std::oct << num << std::endl;
+
+// Will display
+255
+0xff	// Note the 0x prefix for hexadecimal
+0377	// Note the 0 prefix for octal
+```
+
+```
+int num {255};
+
+std::cout << num << std::endl;	// 255
+
+std::cout << std::showpos;		//std::noshowpos
+
+std::cout << num << std::endl;	// +255
+```
+
+#### Stream Manipulators - floating point
+```
+double num {1234.5678};
+
+std::cout << num << std::endl;
+
+// Will display
+
+1234.57	// Notice precision is 6 and rounding
+```
+
+```
+double num {123456789.123456789};
+
+std::cout << num << std::endl;
+
+// Will display
+
+1.23457e+008	// Notice precision is 6 
+```
+
+```
+double num {123456789.123456789};
+
+std::cout << std::setprecision(9);
+std::cout << num << std::endl;
+
+// Will display
+
+1.2345790	// Note that rounding occurs
+```
+
+```
+double num {123456789.123456789};
+
+std::cout << std::fixed;
+std::cout << num << std::endl;
+
+// Will display precision 6 from the decimal
+
+123456789.987654
+```
+
+```
+double num {123456789.123456789};
+
+std::cout << std::setprecision(3) << std::fixed;
+std::cout << num << std::endl;
+
+// Will display precision 3 from the decimal
+
+123456789.988
+```
+
+```
+double num {123456789.123456789};
+
+std::cout << std::setprecision(3) << std::scientific << std::uppercase;
+std::cout << num << std::endl;
+
+// Will always display precision 3
+
+1.23E+008	// Note the capital E
+```
+
+#### Stream Manipulators: align and fill
+Default when displaying floating point values:
+- setw - not set by default
+- left - when no field width, right - when using field width
+- fill - not set by default - blank space is used
+
+```
+double num {1234.5678};
+std::string hello{"Hello"};
+
+std::cout 	<< std::setfill('*');
+std::cout 	<< std::setw(10) << num
+			<< std::setfill("-") << std::setw(10) << hello
+			<< std::setw(15) << hello
+			<< std::endl;
+			
+// Will display
+1234567890123456789012345678901234567890
+***1234.57-----Hello----------Hello
+```
+
+#### Reading from a Text file
+fstream and ifstream are commonly used for input files
+1. #include <fstream>
+2. Declare an fstream or ifstream object
+3. Connect it to a file on your file system (opens it for reading)
+4. Read data from the file via the stream
+5. Close the stream
+
+Opening a file for reading with (fstream)
+```
+std::fstream in_file {"../myfile.txt", std::ios::in};
+```
+
+Open for reading in binary mode
+```
+std::fstream in_file {"../myfile.txt", std::ios::in | std::ios::binary};
+```
+
+```
+std::ifstream in_file;
+std::string filename;
+std::cin >> filename;
+
+in_file.open(filename);
+```
+
+Check if file opened succesfully (is_open)
+```
+if (in_file) {
+	// read from it
+} else {
+	// file could not be opened
+}
+```
+
+Closing a file: always close any open files to flush out any unwritten data
+```
+in_file.close();
+```
+
+Reading from files using (>>)
+```
+int num {};
+double total {};
+std::string name {};
+
+in_file >> num;
+in_file >> total >> name;
+```
+
+Reading from files using getline
+```
+std::string line{};
+
+std::getline(in_file, line);
+```
+
+Reading text file one line at a time
+```
+std::ifstream in_file{"../myfile.txt"};		// open file
+std::string line (};
+
+if (!in_file) {
+	std::cerr << "File open error" << std::endl;
+	return 1;		// exit the program (main)
+}
+
+while (!in_file.eof()) {			// while not at the end
+	std::getline(in_file, line);	// read a line
+	cout << line << std::endl;		// display the line
+}
+in_file.close();	// close the file
+```
+
+Reading text file one character at a time (get)
+```
+std::ifstream in_file{"../myfile.txt"};	// open file
+char c;
+
+if (!in_file) {		// check if file is open
+	std::cerr << "File open error" << std::endl;
+	return 1;
+}
+while (in_file.get(c))	// read a character
+	cout << c;			// display the character
+
+in_file.close();		// close the file
+```
+
+#### Writing to a Text file
+fstream and ofstream are commonly used for output files
+1. #include <fstream>
+2. Declare an fstream or ofstream object
+3. Connect it to a file on your file system
+4. Write data to the file via the stream
+5. Close the stream
+
+Opening a file for writing with (fstream)
+```
+std::fstream out_file {"../myfile.txt", std::ios::out};
+```
+Open for writing in binary mode
+```
+std::fstream out_file {"../myfile.txt", std::ios::out | std::ios::binary};
+```
+
+Opening a file for writing with (ofstream)
+```
+std::ofstream out_file {"../myfile.txt", std::ios::out};
+
+std::ofstream out_file {"../myfile.txt"};
+```
+Open for writing in binary mode
+```
+std::ofstream out_file {"../myfile.txt", std::ios::binary};
+```
+
+Opening a file for writing with (ofstream)
+```
+// truncate (discard contents) when opening
+std::ofstream out_file {"../myfile.txt", std::ios::trunc};
+
+// append on each write
+std::ofstream out_file {"../myfile.txt", std::ios::app};
+
+// seek to end of stream when opening
+std::ofstream out_file {"../myfile.txt", std::ios::ate};
+```
+
+Opening a file for writing with open
+```
+std::ofstream out_file;
+std::string filename;
+std::cin >> filename;	// get the file name
+
+out_file.open(filename);
+// or
+out_file.open(filename, std::ios::binary);
+```
+
+Check if file opened succesfully (is_open)
+```
+if (out_file.is_open()) {
+	// read from it
+} else {
+	// file could not be created of opened
+}
+```
+
+Always close any open files to flush out any unwritten data
+```
+out_file.close();
+```
+
+Writing to files using (<<)
+```
+int num {100};
+double total {255.67};
+std::string name {"Larry"};
+
+out_file 	<< num << "\n"
+			<< total << "\n"
+			<< name << std::endl;
+```
+
+Copying a text file one line at a time
+```
+std::ifstream in_file{"../myfile.txt"};	// open file
+std::ofstream out_file{"../copy.txt"}; 
+
+if (!in_file) {
+	std::cerr << "File open error" << std::endl;
+	return 1;	// exit the program
+}
+if (!out_file) {
+	std::cerr << "File create error" << std::endl;
+	return 1;	// exit the program
+}
+
+std::string line {};
+
+while (std::getline(in_file, line))	// read a line
+	out_file << line << std::endl;
+
+in_file.close();
+out_file.close();
+```
+
+Copying a text file one character at a time (get/put)
+```
+std::ifstream in_file{"../myfile.txt"};
+std::ofstream out_file{"../copy.txt"};
+
+if (!in_file) {
+	std::cerr << "File open error" << std::endl;
+	return 1;
+}
+if (!out_file) {
+	std::cerr << "Fome create error" << std::endl;
+	return 1;
+}
+
+char c;
+
+while (in_file.get(c))
+	out_file.put(c);
+
+in_file.close();
+out_file.close();
+```
+
+#### Using String Streams
+stringstream, istringstream and ostringstream
+1. #include <sstream>
+2. Declare an stringstream, istringstream or ostringstream object
+3. Connect it to a std::string
+4. Read/write data from/to the string stream using formatted IO
+
+Reading from a stringstream
+```
+#include <sstream>
+
+int num {};
+double total {};
+std::string name {};
+std::string info {"Moe 100 1234.5"};
+
+std::istringstream iss{info};
+iss >> name >> num >> total;
+```
+
+Writing to a stringstream
+```
+#include <sstream>
+int num {100};
+double total {1234.5};
+std::string name {"Moe"};
+
+std::ostringstream oss {};
+oss << name << " " << num << " " << total;
+std::cout << oss.str() << std::endl;
+```
+
+Validating input with stringstream
+```
+int value {};
+std::string input {};
+
+std::cout << "Enter an integer: ";
+std::cin >> input;
+
+std::stringstream ss{input};
+if (ss >> value) {
+	std::cout << "An integer was entered";
+else
+	std::cout << "An integer was NOT entered";
+}
+```
+
+
+
 
 
 
