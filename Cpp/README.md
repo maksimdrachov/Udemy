@@ -1639,7 +1639,7 @@ catch (const IllegalBalanceException &ex) {
 }
 ```
 
-#### IO and Streams
+## Section 19: IO and Streams
 | Header file  	| Description |
 | ------------- | ------------- |
 | iostream		| Provides definitions for formatted input and output from/to streams  |
