@@ -1,7 +1,21 @@
+std	/Users/maksim/Library/Application Support/CodeLite/tmp/codelite_templates.hpp	/^namespace std { template<typename _Tp> class shared_ptr {$/;"	namespace	line:1
+shared_ptr	/Users/maksim/Library/Application Support/CodeLite/tmp/codelite_templates.hpp	/^namespace std { template<typename _Tp> class shared_ptr { $/;"	class	line:1	namespace:std
+operator ->	/Users/maksim/Library/Application Support/CodeLite/tmp/codelite_templates.hpp	/^    _Tp* operator->();$/;"	prototype	line:2	class:std::shared_ptr	access:private	signature:()	returns:_Tp 
+reset	/Users/maksim/Library/Application Support/CodeLite/tmp/codelite_templates.hpp	/^    void reset( Y* ptr );$/;"	prototype	line:3	class:std::shared_ptr	access:private	signature:( Y* ptr )	returns:void 
+reset	/Users/maksim/Library/Application Support/CodeLite/tmp/codelite_templates.hpp	/^    void reset( Y* ptr, Deleter d );$/;"	prototype	line:4	class:std::shared_ptr	access:private	signature:( Y* ptr, Deleter d )	returns:void 
+reset	/Users/maksim/Library/Application Support/CodeLite/tmp/codelite_templates.hpp	/^    void reset( Y* ptr, Deleter d, Alloc alloc );$/;"	prototype	line:5	class:std::shared_ptr	access:private	signature:( Y* ptr, Deleter d, Alloc alloc )	returns:void 
+get	/Users/maksim/Library/Application Support/CodeLite/tmp/codelite_templates.hpp	/^    _T* get() const;$/;"	prototype	line:6	class:std::shared_ptr	access:private	signature:() const	returns:_T 
 
 
 
 
+game_over	/Volumes/Seagate/Udemy/Cpp-games/Snake/Snake/Snake/main.cpp	/^bool game_over;$/;"	variable	line:8
+ClearScreen	/Volumes/Seagate/Udemy/Cpp-games/Snake/Snake/Snake/main.cpp	/^void ClearScreen()$/;"	function	line:12	signature:()	returns:void 
+Setup	/Volumes/Seagate/Udemy/Cpp-games/Snake/Snake/Snake/main.cpp	/^void Setup()$/;"	function	line:19	signature:()	returns:void 
+Draw	/Volumes/Seagate/Udemy/Cpp-games/Snake/Snake/Snake/main.cpp	/^void Draw()$/;"	function	line:24	signature:()	returns:void 
+Input	/Volumes/Seagate/Udemy/Cpp-games/Snake/Snake/Snake/main.cpp	/^void Input()$/;"	function	line:31	signature:()	returns:void 
+Logic	/Volumes/Seagate/Udemy/Cpp-games/Snake/Snake/Snake/main.cpp	/^void Logic()$/;"	function	line:36	signature:()	returns:void 
+main	/Volumes/Seagate/Udemy/Cpp-games/Snake/Snake/Snake/main.cpp	/^int main() {$/;"	function	line:42	signature:()	returns:int 
 
 
 
