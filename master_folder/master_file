@@ -1,0 +1,12 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	precomposeunicode = true
+[remote "upstream"]
+	url = git@github.com:maksimdrachov/ardupilot.git
+	fetch = +refs/heads/*:refs/remotes/upstream/*
+[branch "develop"]
+	remote = upstream
+	merge = refs/heads/develop
