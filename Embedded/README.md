@@ -1,4 +1,7 @@
-# Embedded Programming Course
+## Embedded Programming Course
+
+https://www.youtube.com/playlist?list=PLPW8O6W-1chwyTzI3BHwBLbGQoPFxPAPM  
+
 #### Lesson 6: Bit-wise operators in C
 c = a | b; // OR  
 c = a & b; // AND  
@@ -23,5 +26,8 @@ GPIO_PORTF_DATA_R &= ~LED_RED;						// short
 Setting multiple enable bits  
 GPIO_PORTF_DEN_R |= (LED_RED | LED_BLUE | LED_GREEN);  
 
-#### Lesson 7: Arrays and Pointer Arithmetic  
+#### Lesson 7: Arrays and Pointer Arithmetic
+//GPIO_PORTF_DATA_R |= LED_RED;  
+GPIO_PORTF_DATA_BITS_R[LED_RED] = LED_RED;
+
 #### Lesson 8: Functions and the Stack  
