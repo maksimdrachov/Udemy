@@ -1,11 +1,11 @@
 # Embedded Programming Course
 #### Lesson 6: Bit-wise operators in C
-c = a | b; // OR
-c = a & b; // AND
-c = a ^ b; // XOR
-c = ~b;	   // NOT
-c = b >> 1;// right-shift
-c = b << 3;// left-shift
+c = a | b; // OR  
+c = a & b; // AND  
+c = a ^ b; // XOR  
+c = ~b;	   // NOT  
+c = b >> 1;// right-shift  
+c = b << 3;// left-shift  
 
 Shifting: unsigned vs signed
 instructions ASRS for right-shifting of signed numbers (Arithmetic right shift)
